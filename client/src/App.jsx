@@ -24,16 +24,16 @@ export function App() {
   const [watchlistIds, setWatchlistIds] = useState([]);
   const [watchHistory, setWatchHistory] = useState([]);
 
-  // Load initial data
+  // Load initial data from IndexedDB and API
   useEffect(() => {
     async function loadData() {
       const trending = await fetchTrending();
       setTrendingData(trending);
 
-      const history = getLocalWatchHistory();
+      const history = await getLocalWatchHistory();
       setWatchHistory(history);
 
-      const watchlist = getLocalWatchlist();
+      const watchlist = await getLocalWatchlist();
       setWatchlistIds(watchlist);
     }
     loadData();
@@ -49,8 +49,8 @@ export function App() {
     }
   }, [currentTab]);
 
-  const handleToggleWatchlist = (mediaId) => {
-    const updated = toggleLocalWatchlist(mediaId);
+  const handleToggleWatchlist = async (mediaId) => {
+    const updated = await toggleLocalWatchlist(mediaId);
     setWatchlistIds(updated);
   };
 
@@ -180,9 +180,10 @@ export function App() {
           media={activePlayingMedia}
           initialSeason={activePlayingMedia.currentSeason || 1}
           initialEpisode={activePlayingMedia.currentEpisode || 1}
-          onClose={() => {
+          onClose={async () => {
             setActivePlayingMedia(null);
-            setWatchHistory(getLocalWatchHistory());
+            const freshHistory = await getLocalWatchHistory();
+            setWatchHistory(freshHistory);
           }}
         />
       )}

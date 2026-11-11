@@ -1,6 +1,6 @@
-# Vidly Hotstar OTT Platform
+# Vidly Hotstar OTT Platform (Pure Frontend with IndexedDB)
 
-A full-stack, Disney+ Hotstar inspired OTT streaming web platform powered by the **[Vidly.pro API](https://vidly.pro/#api)**. Built with a separate Express backend and a React/Vite/Tailwind CSS frontend.
+A Disney+ Hotstar inspired, pure client-side OTT streaming web platform powered by the **[Vidly.pro API](https://vidly.pro/#api)** and **IndexedDB** for offline storage. Zero backend required.
 
 ---
 
@@ -30,8 +30,8 @@ Real-time instant search with Hotstar category pills (Movies, Shows, Anime, Acti
 
 ---
 
-### 5. My Space (Watchlist & Vidly Playback History)
-Dedicated profile hub tracking user watchlists and synchronized Vidly playback timestamps with percent progress bars.
+### 5. My Space (Watchlist & Vidly Playback History via IndexedDB)
+Dedicated profile hub tracking user watchlists and synchronized Vidly playback timestamps with percent progress bars stored in the browser's IndexedDB.
 ![My Space](screenshots/05-my-space-watchlist.png)
 
 ---
@@ -49,11 +49,12 @@ Dedicated profile hub tracking user watchlists and synchronized Vidly playback t
    - **TV Shows**: `https://vidly.pro/embed/tv/{tmdb_id}/{season}/{episode}`
    - **Anime**: `https://vidly.pro/embed/anime/{id}/{ep}/{audio}` (sub/dub selector)
    - Custom parameters: `theme=hotstar`, `color=00ed82`, `autoplay=true`, `startAt={seconds}`
-   - **Real-time Synchronization**: Listens for window `message` events (`SYNC_HISTORY` and `VIDLY_PLAYER_EVENT`) to automatically record current watch progress into backend and localStorage.
+   - **Real-time Synchronization**: Listens for window `message` events (`SYNC_HISTORY` and `VIDLY_PLAYER_EVENT`) to automatically record current watch progress into IndexedDB.
 
-3. **Separate Backend Architecture**:
-   - Express server (`server/`) with endpoints for catalog listing, trending rails, search filtering, media details, watchlist mutations, and playback history.
-   - 100% test coverage using Node.js native test runner (`server/test/api.test.js`).
+3. **Pure Frontend Architecture with IndexedDB**:
+   - Zero backend server required.
+   - All user watchlists and watch history are stored locally using browser **IndexedDB** (`vidly_ott_db` database) with graceful fallback to `localStorage`.
+   - Instant search and category filtering running entirely client-side.
 
 ---
 
@@ -65,52 +66,26 @@ Dedicated profile hub tracking user watchlists and synchronized Vidly playback t
 
 ### 1. Install Dependencies
 ```bash
-# Root concurrent scripts
-npm install
-
-# Backend dependencies
-npm --prefix server install
-
-# Frontend dependencies
 npm --prefix client install
 ```
 
-### 2. Run Both Backend and Frontend in Development Mode
+### 2. Run in Development Mode
 ```bash
 npm run dev
+# Or: npm --prefix client run dev
 ```
-- **Backend API**: `http://localhost:5001`
-- **Frontend App**: `http://localhost:5173`
+Open **`http://localhost:5173`** in your browser.
 
-### 3. Run Automated Tests
-```bash
-npm test
-# Or: npm --prefix server test
-```
-
-### 4. Build Frontend for Production
+### 3. Build for Production
 ```bash
 npm run build
+# Or: npm --prefix client run build
 ```
-
----
-
-## 📡 API Endpoints (Backend)
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/health` | Service health check |
-| `GET` | `/api/catalog` | Filterable catalog by `type` (movie, tv, anime) and `genre` |
-| `GET` | `/api/trending` | Structured sections: Hero item, Top 10 ranking, and category rows |
-| `GET` | `/api/search?q=:query` | Live search by title, actor, or genre |
-| `GET` | `/api/media/:type/:id` | Detailed media item with episode lists and metadata |
-| `GET` | `/api/vidly/embed-url` | Constructs proper Vidly.pro embed route with parameters |
-| `GET / POST` | `/api/history` | Retrieves and synchronizes playback progress from Vidly player |
-| `GET / POST / DELETE` | `/api/watchlist` | User watchlist management |
 
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend**: React 19, Vite, Tailwind CSS v4, Lucide React icons
-- **Backend**: Express.js, CORS, Morgan, Node.js native test runner
-- **Player API**: [Vidly.pro](https://vidly.pro/#api)
+- **Framework**: React 19 + Vite
+- **Styling**: Tailwind CSS v4 + Lucide React icons
+- **Persistence**: Browser IndexedDB (`vidly_ott_db`) + localStorage fallback
+- **Video Embed API**: [Vidly.pro](https://vidly.pro/#api)
