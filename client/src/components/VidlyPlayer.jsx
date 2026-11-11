@@ -18,12 +18,17 @@ export function VidlyPlayer({ media, initialSeason = 1, initialEpisode = 1, onCl
     { episodeNumber: 1, title: "Episode 1" }
   ];
 
+  // Normalize IDs in case media object was passed from history or watchlist
+  const resolvedType = media.type || media.mediaType || "movie";
+  const resolvedTmdbId = media.tmdbId || media.mediaId || media.id;
+  const resolvedMalId = media.malId || media.id;
+
   // Construct Vidly Embed URL
   const embedUrl = buildVidlyUrl({
-    type: media.type,
-    tmdbId: media.tmdbId,
-    malId: media.malId,
-    id: media.id,
+    type: resolvedType,
+    tmdbId: resolvedTmdbId,
+    malId: resolvedMalId,
+    id: media.id || media.mediaId,
     season,
     episode,
     audio,
@@ -47,16 +52,20 @@ export function VidlyPlayer({ media, initialSeason = 1, initialEpisode = 1, onCl
         const progressPercent = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
 
         const syncRecord = {
-          mediaId: media.id,
-          mediaType: media.type,
+          id: media.id || resolvedTmdbId,
+          tmdbId: resolvedTmdbId,
+          malId: resolvedMalId,
+          mediaId: media.id || resolvedTmdbId,
+          type: resolvedType,
+          mediaType: resolvedType,
           title: media.title,
           poster: media.poster,
           backdrop: media.backdrop,
           progressPercent,
           currentTime,
           duration,
-          season: media.type !== "movie" ? season : null,
-          episode: media.type !== "movie" ? episode : null
+          season: resolvedType !== "movie" ? season : null,
+          episode: resolvedType !== "movie" ? episode : null
         };
 
         setLastSyncProgress(syncRecord);
