@@ -1,0 +1,17 @@
+{
+  "name": "vidly-ott-platform",
+  "version": "1.0.0",
+  "description": "Premium Hotstar-style OTT Platform powered by Vidly.pro API",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "start": "node server/src/index.js",
+    "test": "npm --prefix server test",
+    "build": "npm --prefix client run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
